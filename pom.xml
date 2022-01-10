@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  
+  <parent>
+    <groupId>io.electrum</groupId>
+    <artifactId>undercoat-plugin</artifactId>
+    <version>2.17.0</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>ecs-etl-plugin-jsonpath-search-terms</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0.1</version>
+  <name>ecs-etl-plugin-jsonpath-search-terms</name>
+
+  <properties>
+    <ecs-etl-version>3.17.0-SNAPSHOT</ecs-etl-version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.electrum</groupId>
+      <artifactId>ecs-etl</artifactId>
+      <version>${ecs-etl-version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+</project>
