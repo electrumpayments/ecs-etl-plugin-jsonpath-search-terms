@@ -24,6 +24,12 @@
       <version>${ecs-etl-version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>io.electrum</groupId>
+      <artifactId>electrum-testutils</artifactId>
+      <version>1.2.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
