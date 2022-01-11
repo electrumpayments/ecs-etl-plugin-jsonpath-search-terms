@@ -1,9 +1,9 @@
 package io.electrum.ecs.netl.handler;
 
 import io.electrum.ecs.dao.transfer.TranLegReq;
-import io.electrum.ecs.netl.dao.Transfer.SwitchTranLegReq;
 import io.electrum.ecs.netl.extract.Extract;
-import io.electrum.ecs.netl.extract.ITranLegExtractConfig;
+
+import java.util.Collections;
 
 public class AdditionalSearchTermsOperation extends Operation{
 
@@ -25,9 +25,8 @@ public class AdditionalSearchTermsOperation extends Operation{
         return false;
     }
 
-    protected TranLegReq transform(TranLegReq switchTranLegReq) throws Exception {
-        TranLegReq tranLegReq = new TranLegReq();
-        tranLegReq.setMsgDesc("Wavhudi");
+    protected TranLegReq transform(TranLegReq tranLegReq) throws Exception {
+        tranLegReq.setSearchTerms(Collections.singleton("Wavhudi"));
         return tranLegReq;
     }
 }
