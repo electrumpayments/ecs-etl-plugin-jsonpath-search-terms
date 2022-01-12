@@ -3,8 +3,9 @@ package test.java;
 import io.electrum.ecs.dao.transfer.TranLegReq;
 import io.electrum.ecs.netl.handler.AdditionalSearchTermsOperation;
 import io.electrum.ecs.netl.handler.Row;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
 
 public class MyTest {
 
@@ -20,7 +21,8 @@ public class MyTest {
         String beforeAdditionOfSearchTerms = tranLegReq.toString().substring(0, index);
         // Testing if both tranLegReq contains the  same data before adding additional search terms
         //ssert.assertTrue(tranLegReq1.equals(tranLegReq));
-        ad.process(myRow);
+        Assert.assertFalse(ad.process(myRow));
+        //System.out.println(tranLegReq);
         String afterAdditionOfSearchTerms = tranLegReq.toString().substring(0, index);
         // Testing if "Wavhudi" was added to  the search terms list.
         // 1. Add “Wavhudi” to the set of search terms for a TranLegReq
@@ -28,9 +30,7 @@ public class MyTest {
 
         //  2. Preserve all data that was in the TranLegReq that was in it before your operation processes it, including
         //  any search terms that were already in the TranLegReq
-        Assert.assertTrue(beforeAdditionOfSearchTerms.equals(afterAdditionOfSearchTerms));
-        // 3. Return a  boolean indicating whether the operation “consumed” the row (you can read the javadoc of the operation
-        // method in io.electrum.ecs.netl.handler.Operation if you want to understand what is meant by “consumed”).
-        Assert.assertFalse(ad.process(myRow));
+        Assert.assertEquals(beforeAdditionOfSearchTerms, afterAdditionOfSearchTerms);
+
     }
 }

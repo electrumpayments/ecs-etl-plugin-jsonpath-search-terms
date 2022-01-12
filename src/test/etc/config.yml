@@ -1,0 +1,7 @@
+application: ecs-etl
+version: 3.7.0
+configurations:
+  - name: WavhudiConfig
+    className: io.electrum.ecs.netl.handler.MyOperationConfigYml
+    operationClassName: io.electrum.ecs.netl.handler.AdditionalSearchTermsOperation
+    searchTerm: bla
