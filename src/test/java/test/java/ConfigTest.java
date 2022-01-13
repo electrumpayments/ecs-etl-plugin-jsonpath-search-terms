@@ -1,6 +1,7 @@
 package test.java;
 
 import io.electrum.ecs.dao.transfer.TranLegReq;
+import io.electrum.ecs.netl.handler.AdditionalSearchTermsOperation;
 import io.electrum.ecs.netl.handler.MyOperationConfigYml;
 import io.electrum.ecs.netl.handler.OperationConfigYml;
 import io.electrum.ecs.netl.handler.Row;
@@ -34,8 +35,8 @@ public class ConfigTest {
         // Testing if going to  be able  to add the searchTerm from the config
         TranLegReq tranLegReq =  new TranLegReq();
         Row row = new Row(tranLegReq);
-        tranLegReq.setSearchTerms(Collections.singleton(config.getSearchTerm()));
-
+        AdditionalSearchTermsOperation  ad = new AdditionalSearchTermsOperation(config,  null);
+        ad.process(row);
         Assert.assertTrue(tranLegReq.getSearchTerms().contains("bla"));
 
     }

@@ -26,7 +26,11 @@ public class AdditionalSearchTermsOperation extends Operation{
     }
 
     protected TranLegReq transform(TranLegReq tranLegReq) throws Exception {
-        tranLegReq.setSearchTerms(Collections.singleton("Wavhudi"));
+
+        MyOperationConfigYml myOperationConfigYml = (MyOperationConfigYml) getConfig();
+        //tranLegReq.setSearchTerms(Collections.singleton(myOperationConfigYml.getSearchTerm()));
+        //System.out.println(myOperationConfigYml.getSearchTerm());
+        tranLegReq.setSearchTerms(Collections.singleton(myOperationConfigYml.getSearchTerm()));
         return tranLegReq;
     }
 }
