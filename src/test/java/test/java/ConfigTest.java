@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 public class ConfigTest {
 
@@ -36,7 +37,12 @@ public class ConfigTest {
         TranLegReq tranLegReq =  new TranLegReq();
         Row row = new Row(tranLegReq);
         AdditionalSearchTermsOperation  ad = new AdditionalSearchTermsOperation(config,  null);
+
+        Set<String> old = tranLegReq.getSearchTerms();
+        old.add("Wavhudi");
+        old.add("Cornelius");
         ad.process(row);
+        System.out.println(tranLegReq.toString());
         Assert.assertTrue(tranLegReq.getSearchTerms().contains("bla"));
 
     }

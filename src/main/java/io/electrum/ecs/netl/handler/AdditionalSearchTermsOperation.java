@@ -4,6 +4,7 @@ import io.electrum.ecs.dao.transfer.TranLegReq;
 import io.electrum.ecs.netl.extract.Extract;
 
 import java.util.Collections;
+import java.util.Set;
 
 public class AdditionalSearchTermsOperation extends Operation{
 
@@ -28,9 +29,9 @@ public class AdditionalSearchTermsOperation extends Operation{
     protected TranLegReq transform(TranLegReq tranLegReq) throws Exception {
 
         MyOperationConfigYml myOperationConfigYml = (MyOperationConfigYml) getConfig();
-        //tranLegReq.setSearchTerms(Collections.singleton(myOperationConfigYml.getSearchTerm()));
-        //System.out.println(myOperationConfigYml.getSearchTerm());
-        tranLegReq.setSearchTerms(Collections.singleton(myOperationConfigYml.getSearchTerm()));
+        Set<String> oldSearchTerms = tranLegReq.getSearchTerms();
+        oldSearchTerms.add(myOperationConfigYml.getSearchTerm());
+        tranLegReq.setSearchTerms(oldSearchTerms);
         return tranLegReq;
     }
 }
