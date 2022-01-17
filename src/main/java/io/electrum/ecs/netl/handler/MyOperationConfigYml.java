@@ -11,25 +11,25 @@ public class MyOperationConfigYml extends OperationConfigYml{
 
     @JsonProperty
     @NotNull
-    private String searchTerm;
+    private String query;
 
-    public String getSearchTerm() {return searchTerm;}
+    public String getQuery() {return query;}
 
     @Override
     public boolean equals(Object o) {
         super.equals(o);
         MyOperationConfigYml that = (MyOperationConfigYml) o;
-        return Objects.equals(getSearchTerm(), that.getSearchTerm());
+        return Objects.equals(getQuery(), that.getQuery());
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(super.hashCode(), getSearchTerm());
+        return Objects.hash(super.hashCode(), getQuery());
     }
 
     @Override
     public String toString() {
-        return "MyOperationConfigYml{" + "searchTerms='" + searchTerm +super.toString();
+        return "MyOperationConfigYml{" + "searchTerms='" + query +super.toString();
     }
 }

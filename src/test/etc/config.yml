@@ -4,4 +4,4 @@ configurations:
   - name: WavhudiConfig
     className: io.electrum.ecs.netl.handler.MyOperationConfigYml
     operationClassName: io.electrum.ecs.netl.handler.AdditionalSearchTermsOperation
-    searchTerm: bla
+    query: $.searchTerms[1].two

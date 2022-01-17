@@ -1,5 +1,8 @@
 package test.java;
 
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
 import io.electrum.ecs.dao.transfer.TranLegReq;
 import io.electrum.ecs.netl.handler.AdditionalSearchTermsOperation;
 import io.electrum.ecs.netl.handler.MyOperationConfigYml;
@@ -10,12 +13,13 @@ import io.electrum.undercoat.configuration.ConfigurationUpdater;
 import io.electrum.undercoat.configuration.loader.FileConfigurationLoader;
 import io.electrum.undercoat.configuration.provider.YamlConfigurationProvider;
 import io.electrum.undercoat.util.FileUtils;
+import net.minidev.json.JSONUtil;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
+import static com.jayway.jsonpath.JsonPath.using;
 
 public class ConfigTest {
 
@@ -31,19 +35,20 @@ public class ConfigTest {
 
         Assert.assertTrue(clazz.isPresent());
         MyOperationConfigYml config = (MyOperationConfigYml) clazz.get();
-        Assert.assertEquals(config.getSearchTerm(), "bla");
+        //Assert.assertEquals(config.getQuery(), "bla");
 
         // Testing if going to  be able  to add the searchTerm from the config
         TranLegReq tranLegReq =  new TranLegReq();
         Row row = new Row(tranLegReq);
         AdditionalSearchTermsOperation  ad = new AdditionalSearchTermsOperation(config,  null);
 
-        Set<String> old = tranLegReq.getSearchTerms();
-        old.add("Wavhudi");
-        old.add("Cornelius");
-        ad.process(row);
-        System.out.println(tranLegReq.toString());
-        Assert.assertTrue(tranLegReq.getSearchTerms().contains("bla"));
+        // testing the jsonPath
+        String json = "{\"searchTerms\": [ {\"one\": [\"Wavhudi\", \"moon\", \"Milk\"]}, {\"two\": \"Cornelius\"}, {\"three\": \"bla\"}]}";
 
+        tranLegReq.setJsonPayload(json); // setting testing data, when pulling from an actual api we won't need this.
+
+        ad.process(row);
+
+        Assert.assertTrue(tranLegReq.getSearchTerms().contains("Cornelius"));
     }
 }

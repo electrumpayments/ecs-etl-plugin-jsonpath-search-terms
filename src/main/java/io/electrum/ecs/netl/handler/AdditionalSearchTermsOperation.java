@@ -1,10 +1,13 @@
 package io.electrum.ecs.netl.handler;
 
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
 import io.electrum.ecs.dao.transfer.TranLegReq;
 import io.electrum.ecs.netl.extract.Extract;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdditionalSearchTermsOperation extends Operation{
 
@@ -29,9 +32,25 @@ public class AdditionalSearchTermsOperation extends Operation{
     protected TranLegReq transform(TranLegReq tranLegReq) throws Exception {
 
         MyOperationConfigYml myOperationConfigYml = (MyOperationConfigYml) getConfig();
-        Set<String> oldSearchTerms = tranLegReq.getSearchTerms();
-        oldSearchTerms.add(myOperationConfigYml.getSearchTerm());
-        tranLegReq.setSearchTerms(oldSearchTerms);
+
+        Configuration conf = Configuration.builder().options(Option.AS_PATH_LIST).build();
+        JsonPath path =  JsonPath.compile(myOperationConfigYml.getQuery());
+        List<String> listOfSearchTerms = new ArrayList<>();
+        String searchTermsFromJsonPayLoad = null;
+        if(tranLegReq.getJsonPayload() != null) {
+            if(path.isDefinite()) {
+                searchTermsFromJsonPayLoad = JsonPath.parse(tranLegReq.getJsonPayload()).read(myOperationConfigYml.getQuery());
+                tranLegReq.getSearchTerms().add(searchTermsFromJsonPayLoad);
+            }else {
+                listOfSearchTerms = JsonPath.parse(tranLegReq.getJsonPayload()).read(myOperationConfigYml.getQuery());
+                for(String term: listOfSearchTerms) {
+                    tranLegReq.getSearchTerms().add(term);
+                }
+            }
+        }
+
+        //System.out.println(searchTermsFromJsonPayLoad);
+        //tranLegReq.getSearchTerms().add(myOperationConfigYml.getQuery());;
         return tranLegReq;
     }
 }
