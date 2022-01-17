@@ -49,6 +49,8 @@ public class ConfigTest {
 
         ad.process(row);
 
-        Assert.assertTrue(tranLegReq.getSearchTerms().contains("Cornelius"));
+        Assert.assertTrue(tranLegReq.getSearchTerms().contains("Wavhudi"));
+        Assert.assertTrue(tranLegReq.getSearchTerms().contains("moon"));
+        Assert.assertTrue(tranLegReq.getSearchTerms().contains("Milk"));
     }
 }

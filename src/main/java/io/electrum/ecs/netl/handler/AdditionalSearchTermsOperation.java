@@ -35,22 +35,18 @@ public class AdditionalSearchTermsOperation extends Operation{
 
         Configuration conf = Configuration.builder().options(Option.AS_PATH_LIST).build();
         JsonPath path =  JsonPath.compile(myOperationConfigYml.getQuery());
-        List<String> listOfSearchTerms = new ArrayList<>();
-        String searchTermsFromJsonPayLoad = null;
         if(tranLegReq.getJsonPayload() != null) {
             if(path.isDefinite()) {
-                searchTermsFromJsonPayLoad = JsonPath.parse(tranLegReq.getJsonPayload()).read(myOperationConfigYml.getQuery());
+                String searchTermsFromJsonPayLoad = JsonPath.parse(tranLegReq.getJsonPayload()).read(myOperationConfigYml.getQuery());
                 tranLegReq.getSearchTerms().add(searchTermsFromJsonPayLoad);
             }else {
-                listOfSearchTerms = JsonPath.parse(tranLegReq.getJsonPayload()).read(myOperationConfigYml.getQuery());
-                for(String term: listOfSearchTerms) {
-                    tranLegReq.getSearchTerms().add(term);
+                List<String> listOfSearchTerms = JsonPath.parse(tranLegReq.getJsonPayload()).read(myOperationConfigYml.getQuery());
+                for(int i = 0; i < listOfSearchTerms.size(); ++i) {
+                    tranLegReq.getSearchTerms().add(listOfSearchTerms.get(i));
                 }
             }
         }
 
-        //System.out.println(searchTermsFromJsonPayLoad);
-        //tranLegReq.getSearchTerms().add(myOperationConfigYml.getQuery());;
         return tranLegReq;
     }
 }
