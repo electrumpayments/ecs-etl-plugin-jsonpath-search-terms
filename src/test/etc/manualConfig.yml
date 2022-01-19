@@ -1,0 +1,200 @@
+---
+application: ecs-etl
+version: 2.0.0
+configurations:
+
+  - className: io.electrum.ecs.etl.EcsEtlConfig
+    importStartDateTime: "2016-07-26T09:37:03.000"
+    importBatchSize: 10
+    importBackoffTime: 50
+    extracts:
+      - EdgeMessageExtract
+      - TranLegUpdateExtract
+      - TranLegExtract
+
+  - name: EdgeMessageExtract
+    className: io.electrum.ecs.netl.extract.SequentialExtractConfig
+    extractClassName: io.electrum.ecs.netl.extract.EdgeMsgExtract
+    switchDaoFactoryName: conn1DaoFactory
+    batchSize: 50
+    processInterval: 5000
+    processIntervalTimeUnit: MILLISECONDS
+    lagTimeSeconds: 30
+    rowHandlers:
+      - TransformSwitchEdgeMsgHandler
+      - InsertEdgeMsgHandler
+
+  - name: TransformSwitchEdgeMsgHandler
+    className: io.electrum.ecs.netl.handler.RowHandlerConfigYml
+    operation: TransformSwitchEdgeMsgOperation
+    connectedHandlers:
+      - InsertEdgeMsgHandler
+
+  - name: TransformSwitchEdgeMsgOperation
+    className: io.electrum.ecs.netl.handler.OperationConfigYml
+    operationClassName: io.electrum.ecs.netl.handler.TransformSwitchEdgeMsg
+
+  - name: InsertEdgeMsgHandler
+    className: io.electrum.ecs.netl.handler.RowHandlerConfigYml
+    operation: InsertEdgeMsgOperation
+
+  - name: InsertEdgeMsgOperation
+    className: io.electrum.ecs.netl.handler.OperationConfigYml
+    operationClassName: io.electrum.ecs.netl.handler.InsertEdgeMsg
+    flushSize: 10
+
+  - name: TranLegUpdateExtract
+    className: io.electrum.ecs.netl.extract.SequentialExtractConfig
+    extractClassName: io.electrum.ecs.netl.extract.TranLegUpdateExtract
+    switchDaoFactoryName: conn1DaoFactory
+    batchSize: 50
+    processInterval: 5000
+    processIntervalTimeUnit: MILLISECONDS
+    lagTimeSeconds: 30
+    rowHandlers:
+      - TransformSwitchTranLegUpdHandler
+      - InsertTranLegEtlHandler
+
+  - name: TransformSwitchTranLegUpdHandler
+    className: io.electrum.ecs.netl.handler.RowHandlerConfigYml
+    operation: TransformSwitchTranLegUpdOperation
+    connectedHandlers:
+      - InsertTranLegEtlHandler
+
+  - name: TransformSwitchTranLegUpdOperation
+    className: io.electrum.ecs.netl.handler.OperationConfigYml
+    operationClassName: io.electrum.ecs.netl.handler.TransformSwitchTranLegUpd
+
+  - name: InsertTranLegEtlHandler
+    className: io.electrum.ecs.netl.handler.RowHandlerConfigYml
+    operation: InsertTranLegEtlOperation
+
+  - name: InsertTranLegEtlOperation
+    className: io.electrum.ecs.netl.handler.OperationConfigYml
+    operationClassName: io.electrum.ecs.netl.handler.InsertTranLegEtl
+    flushSize: 1
+
+  - name: TranLegExtract
+    className: io.electrum.ecs.netl.extract.TranLegExtractConfig
+    extractClassName: io.electrum.ecs.netl.extract.TranLegExtract
+    switchDaoFactoryName: conn1DaoFactory
+    batchSize: 500
+    flushInterval: 100
+    flushIntervalTimeUnit: MILLISECONDS
+    processInterval: 100
+    processIntervalTimeUnit: MILLISECONDS
+    threadpoolSize: 8
+    maxQueueLength: 500
+    rowHandlers:
+      - TransformSwitchTranLegHandler
+      - AdditionalSearchTermsHandler # added this rowHandlers
+      - InsertTranLegRspHandler
+      - InsertTranLegReqHandler
+    defaultRetention: 36
+    serviceRetentionProfiles:
+      AIRTIME:
+        messageRetention:
+          VOUCHER_REQUEST: 12
+      BILLPAY:
+        defaultRetention: 24
+
+  - name: TransformSwitchTranLegHandler
+    className: io.electrum.ecs.netl.handler.RowHandlerConfigYml
+    operation: TransformSwitchTranLegOperation
+    connectedHandlers:
+#      - InsertTranLegRspHandler
+      - AdditionalSearchTermsHandler
+
+  - name: TransformSwitchTranLegOperation
+    className: io.electrum.ecs.netl.handler.OperationConfigYml
+    operationClassName: io.electrum.ecs.netl.handler.TransformSwitchTranLeg
+
+# my configured handler and operation
+  - name: AdditionalSearchTermsHandler
+    className: io.electrum.ecs.netl.handler.RowHandlerConfigYml
+    operation: AdditionalSearchTermsOperation
+    connectedHandlers:
+      - InsertTranLegRspHandler
+
+  - name: AdditionalSearchTermsOperation
+    className: io.electrum.ecs.netl.handler.MyOperationConfigYml
+    operationClassName: io.electrum.ecs.netl.handler.AdditionalSearchTermsOperation
+    query: $.searchTerms[0].one #$.thirdPartyIdentifiers[0].institutionId
+
+  - name: InsertTranLegRspHandler
+    className: io.electrum.ecs.netl.handler.RowHandlerConfigYml
+    operation: InsertTranLegRspOperation
+    connectedHandlers:
+      - InsertTranLegReqHandler
+
+  - name: InsertTranLegRspOperation
+    className: io.electrum.ecs.netl.handler.OperationConfigYml
+    operationClassName: io.electrum.ecs.netl.handler.InsertTranLegRsp
+    flushSize: 10
+
+  - name: InsertTranLegReqHandler
+    className: io.electrum.ecs.netl.handler.RowHandlerConfigYml
+    operation: InsertTranLegReqOperation
+
+  - name: InsertTranLegReqOperation
+    className: io.electrum.ecs.netl.handler.OperationConfigYml
+    operationClassName: io.electrum.ecs.netl.handler.InsertTranLegReq
+    flushSize: 10
+
+  - name: conn1DaoFactory
+    className: io.electrum.ecs.netl.dao.SwitchDaoFactoryConfigYml
+    daoFactoryClassName: io.electrum.ecs.netl.dao.SwitchDaoFactory_v0_11_0
+    connId: 1
+    dataSourceName: gwMySql
+
+  - className: io.electrum.ecs.dao.EcsDaoConfig
+    ecsDataSource: ecslocal_mysql8
+
+  #
+  # Test case DataSources
+  #
+  - name: ecslocal_mysql8
+    className: io.electrum.undercoat.database.datasource.HikariUrlDataSourceConfig
+    maxPoolSize: 10
+    dataSourceType: MySql
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3309/ecs?verifyServerCertificate=false&useSSL=true&localSocketAddress=localhost
+    userName: electrum
+    password: M0sa1c$$
+
+  - name: gwMySql
+    className: io.electrum.undercoat.database.datasource.HikariMySqlDataSourceConfig
+    hostname: localhost
+    port: 3309
+    databaseName: gateway
+    userName: electrum
+    password: ENCRYPT(c85phZvOd36j39J9xw0IoAEdIdigx2oKKpJlekUPdoE=)
+
+  # Prevent port clashes when doing manually with other ECS apps.
+  #
+  - name: ecs-etl
+    className: io.electrum.undercoat.application.DaemonConfig
+    commandServicePort: 18006
+    healthCheckServicePort: 18016
+
+  #
+  # Metrics config
+  #
+  - className: io.electrum.undercoat.metrics.MetricsConfig
+    jmxReporterEnabled: true
+    slf4jReporterEnabled: false
+
+  #
+  # Logging config
+  #
+  - className: io.electrum.undercoat.logging.config.SimpleLoggingConfig
+    loggers:
+      - name: io.electrum
+        level: DEBUG
+        appenderRefs:
+          - eventLogFile
+          - jsoneventLogFile
+      - name: io.electrum.trace
+        level: INFO
+        appenderRefs:
+          - traceLogFile
