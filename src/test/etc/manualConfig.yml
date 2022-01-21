@@ -119,7 +119,10 @@ configurations:
   - name: AdditionalSearchTermsOperation
     className: io.electrum.ecs.netl.handler.MyOperationConfigYml
     operationClassName: io.electrum.ecs.netl.handler.AdditionalSearchTermsOperation
-    query: $.searchTerms[0].one #$.thirdPartyIdentifiers[0].institutionId
+    query:
+      - $.thirdPartyIdentifiers[0].institutionId
+      - $.id
+    deliveryMethod: 2
 
   - name: InsertTranLegRspHandler
     className: io.electrum.ecs.netl.handler.RowHandlerConfigYml

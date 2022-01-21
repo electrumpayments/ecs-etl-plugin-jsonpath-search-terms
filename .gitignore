@@ -1,0 +1,13 @@
+bin/
+target/
+test-output/
+.classpath
+.project
+.settings
+logs/
+*.iml
+.DS_Store
+.idea
+.DS_Store
+\$*
+.factorypath
