@@ -1,11 +1,7 @@
 package io.electrum.ecs.netl.handler;
 
-import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.PathNotFoundException;
 import io.electrum.ecs.dao.transfer.TranLegReq;
-import io.electrum.ecs.etl.EcsEtlDaemon;
 import io.electrum.ecs.netl.extract.Extract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,30 +36,38 @@ public class AdditionalSearchTermsOperation extends Operation{
 
         MyOperationConfigYml myOperationConfigYml = (MyOperationConfigYml) getConfig();
 
-        Configuration conf = Configuration.builder().options(Option.AS_PATH_LIST).build();
-
         if(canProcessTransaction(myOperationConfigYml, tranLegReq)) {
-            for (String query : myOperationConfigYml.getQuery()) {
-                JsonPath path = JsonPath.compile(query);
-                try {
-                    if (tranLegReq.getJsonPayload() != null) {
-                        if (path.isDefinite()) {
-                            String searchTermsFromJsonPayLoad = JsonPath.parse(tranLegReq.getJsonPayload()).read(query);
-                            tranLegReq.getSearchTerms().add(searchTermsFromJsonPayLoad);
-                        } else {
-                            List<String> listOfSearchTerms = JsonPath.parse(tranLegReq.getJsonPayload()).read(query);
-                            for (int i = 0; i < listOfSearchTerms.size(); ++i) {
-                                tranLegReq.getSearchTerms().add(listOfSearchTerms.get(i));
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.warn("Could Find the Path `" + myOperationConfigYml.getQuery() + "` Provided", e);
-                }
+            for (String query : myOperationConfigYml.getJson_payload_paths()) {
+                transformHelper(tranLegReq, query, myOperationConfigYml);
+            }
+
+            for(String query: myOperationConfigYml.getExtended_data_paths()) {
+                transformHelper(tranLegReq, query, myOperationConfigYml);
+            }
+
+            for(String query: myOperationConfigYml.getJson_http_msg_paths()) {
+                transformHelper(tranLegReq, query, myOperationConfigYml);
             }
         }
 
         return tranLegReq;
+    }
+
+    private void transformHelper(TranLegReq tranLegReq, String query, MyOperationConfigYml myOperationConfigYml) throws Exception {
+        JsonPath path = JsonPath.compile(query);
+        try {
+            if (tranLegReq.getJsonPayload() != null) {
+                if (path.isDefinite()) {
+                    String searchTermsFromJsonPayLoad = JsonPath.parse(tranLegReq.getJsonPayload()).read(query);
+                    tranLegReq.getSearchTerms().add(searchTermsFromJsonPayLoad);
+                } else {
+                    List<String> listOfSearchTerms = JsonPath.parse(tranLegReq.getJsonPayload()).read(query);
+                    tranLegReq.getSearchTerms().addAll(listOfSearchTerms);
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Could Find the Path `" + myOperationConfigYml.getJson_payload_paths() + "` Provided", e);
+        }
     }
 
     protected boolean canProcessTransaction(MyOperationConfigYml myOperationConfigYml, TranLegReq tranLegReq) {
@@ -71,7 +75,6 @@ public class AdditionalSearchTermsOperation extends Operation{
         HashMap<String, String> filtersOfStringType = myOperationConfigYml.generateFiltersOfStringType();
         HashMap<String, Integer> filtersOfIntegerType = myOperationConfigYml.generateFiltersOfIntegerType();
 
-        if(!(filtersOfIntegerType.isEmpty()) || !(filtersOfStringType.isEmpty())) {
             for(Map.Entry<String, String> mapElements : filtersOfStringType.entrySet()) {
                 String k = mapElements.getKey();
                 String v = mapElements.getValue();
@@ -113,7 +116,6 @@ public class AdditionalSearchTermsOperation extends Operation{
                         break;
                 }
             }
-        }
 
         return true;
     }

@@ -3,9 +3,6 @@ package io.electrum.ecs.netl.handler;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.electrum.undercoat.configuration.definition.annotation.ConfigurationDefinition;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -14,8 +11,12 @@ import java.util.Objects;
 public class MyOperationConfigYml extends OperationConfigYml{
 
     @JsonProperty
-    @NotNull
-    private List<String> query;
+    private List<String> json_payload_paths;
+
+    @JsonProperty
+    private List<String> extended_data_paths;
+    @JsonProperty
+    private List<String> json_http_msg_paths;
 
     // filters array
     private HashMap<String,String> filtersOfStringType;
@@ -77,7 +78,15 @@ public class MyOperationConfigYml extends OperationConfigYml{
         return deliveryMethod;
     }
 
-    public List<String> getQuery() {return query;}
+    public List<String> getJson_payload_paths() {return json_payload_paths;}
+
+    public List<String> getExtended_data_paths() {
+        return extended_data_paths;
+    }
+
+    public List<String> getJson_http_msg_paths() {
+        return json_http_msg_paths;
+    }
 
     // generating a list of filters with non-Null values or defaults of 0 values
     public HashMap<String,String> generateFiltersOfStringType() {
@@ -105,17 +114,17 @@ public class MyOperationConfigYml extends OperationConfigYml{
     public boolean equals(Object o) {
         super.equals(o);
         MyOperationConfigYml that = (MyOperationConfigYml) o;
-        return Objects.equals(getQuery(), that.getQuery());
+        return Objects.equals(getJson_payload_paths(), that.getJson_payload_paths());
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(super.hashCode(), getQuery());
+        return Objects.hash(super.hashCode(), getJson_payload_paths());
     }
 
     @Override
     public String toString() {
-        return "MyOperationConfigYml{" + "searchTerms='" + query.toString() + super.toString();
+        return "MyOperationConfigYml{" + "searchTerms='" + json_payload_paths.toString() + super.toString();
     }
 }
