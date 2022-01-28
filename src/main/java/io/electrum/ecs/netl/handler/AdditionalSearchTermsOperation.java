@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AdditionalSearchTermsOperation extends Operation{
+public class AdditionalSearchTermsOperation extends Operation {
 
     private static Logger logger = LoggerFactory.getLogger(AdditionalSearchTermsOperation.class);
 
@@ -36,17 +36,22 @@ public class AdditionalSearchTermsOperation extends Operation{
 
         MyOperationConfigYml myOperationConfigYml = (MyOperationConfigYml) getConfig();
 
-        if(canProcessTransaction(myOperationConfigYml, tranLegReq)) {
-            for (String query : myOperationConfigYml.getJson_payload_paths()) {
-                transformHelper(tranLegReq, query, myOperationConfigYml);
-            }
+        if (filterTransactions(myOperationConfigYml, tranLegReq)) {
 
-            for(String query: myOperationConfigYml.getExtended_data_paths()) {
-                transformHelper(tranLegReq, query, myOperationConfigYml);
-            }
+            try {
+                for (String query : myOperationConfigYml.getJson_payload_paths()) {
+                    transformHelper(tranLegReq, query, myOperationConfigYml);
+                }
 
-            for(String query: myOperationConfigYml.getJson_http_msg_paths()) {
-                transformHelper(tranLegReq, query, myOperationConfigYml);
+                for (String query : myOperationConfigYml.getExtended_data_paths()) {
+                    transformHelper(tranLegReq, query, myOperationConfigYml);
+                }
+
+                for (String query : myOperationConfigYml.getJson_http_msg_paths()) {
+                    transformHelper(tranLegReq, query, myOperationConfigYml);
+                }
+            } catch (Exception e) {
+                logger.warn("Some paths are empty: ", e);
             }
         }
 
@@ -70,52 +75,52 @@ public class AdditionalSearchTermsOperation extends Operation{
         }
     }
 
-    protected boolean canProcessTransaction(MyOperationConfigYml myOperationConfigYml, TranLegReq tranLegReq) {
+    protected boolean filterTransactions(MyOperationConfigYml myOperationConfigYml, TranLegReq tranLegReq) {
 
         HashMap<String, String> filtersOfStringType = myOperationConfigYml.generateFiltersOfStringType();
         HashMap<String, Integer> filtersOfIntegerType = myOperationConfigYml.generateFiltersOfIntegerType();
 
-            for(Map.Entry<String, String> mapElements : filtersOfStringType.entrySet()) {
-                String k = mapElements.getKey();
-                String v = mapElements.getValue();
-                switch (k) {
-                    case "jsonPayloadClass":
-                        if (!(v.equals(tranLegReq.getJsonPayloadClass()))) return false;
-                        break;
-                    case "inletCogId":
-                        if (!(v.equals(tranLegReq.getInletCogId()))) return false;
-                        break;
-                    case "cogId":
-                        if (!(v.equals(tranLegReq.getCogId()))) return false;
-                        break;
-                    case "queueId":
-                        if (!(v.equals(tranLegReq.getQueueId()))) return false;
-                        break;
-                    case "serviceType":
-                        if (!(v.equals(tranLegReq.getServiceType()))) return false;
-                        break;
-                    case "serviceMsgType":
-                        if (!(v.equals(tranLegReq.getServiceMsgType()))) return false;
-                        break;
-                }
+        for (Map.Entry<String, String> mapElements : filtersOfStringType.entrySet()) {
+            String k = mapElements.getKey();
+            String v = mapElements.getValue();
+            switch (k) {
+                case "jsonPayloadClass":
+                    if (!(v.equals(tranLegReq.getJsonPayloadClass()))) return false;
+                    break;
+                case "inletCogId":
+                    if (!(v.equals(tranLegReq.getInletCogId()))) return false;
+                    break;
+                case "cogId":
+                    if (!(v.equals(tranLegReq.getCogId()))) return false;
+                    break;
+                case "queueId":
+                    if (!(v.equals(tranLegReq.getQueueId()))) return false;
+                    break;
+                case "serviceType":
+                    if (!(v.equals(tranLegReq.getServiceType()))) return false;
+                    break;
+                case "serviceMsgType":
+                    if (!(v.equals(tranLegReq.getServiceMsgType()))) return false;
+                    break;
             }
+        }
 
-            // for the second list
-            for(Map.Entry<String, Integer> mapElements : filtersOfIntegerType.entrySet()) {
-                String k = mapElements.getKey();
-                Integer v = mapElements.getValue();
-                switch (k) {
-                    case "connId":
-                        if (!(v == tranLegReq.getConnId())) return false;
-                        break;
-                    case "operation":
-                        if (!(v == tranLegReq.getOperation())) return false;
-                        break;
-                    case "deliveryMethod":
-                        if (!(v == tranLegReq.getDeliveryMethod())) return false;
-                        break;
-                }
+        // for the second list
+        for (Map.Entry<String, Integer> mapElements : filtersOfIntegerType.entrySet()) {
+            String k = mapElements.getKey();
+            Integer v = mapElements.getValue();
+            switch (k) {
+                case "connId":
+                    if (!(v == tranLegReq.getConnId())) return false;
+                    break;
+                case "operation":
+                    if (!(v == tranLegReq.getOperation())) return false;
+                    break;
+                case "deliveryMethod":
+                    if (!(v == tranLegReq.getDeliveryMethod())) return false;
+                    break;
             }
+        }
 
         return true;
     }

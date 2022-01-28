@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 @ConfigurationDefinition(name = "MyOperationConfigYml")
-public class MyOperationConfigYml extends OperationConfigYml{
+public class MyOperationConfigYml extends OperationConfigYml {
 
     @JsonProperty
     private List<String> json_payload_paths;
@@ -18,8 +18,9 @@ public class MyOperationConfigYml extends OperationConfigYml{
     @JsonProperty
     private List<String> json_http_msg_paths;
 
+
     // filters array
-    private HashMap<String,String> filtersOfStringType;
+    private HashMap<String, String> filtersOfStringType;
     private HashMap<String, Integer> filtersOfIntegerType;
 
     // filtering string fields
@@ -78,7 +79,9 @@ public class MyOperationConfigYml extends OperationConfigYml{
         return deliveryMethod;
     }
 
-    public List<String> getJson_payload_paths() {return json_payload_paths;}
+    public List<String> getJson_payload_paths() {
+        return json_payload_paths;
+    }
 
     public List<String> getExtended_data_paths() {
         return extended_data_paths;
@@ -89,9 +92,9 @@ public class MyOperationConfigYml extends OperationConfigYml{
     }
 
     // generating a list of filters with non-Null values or defaults of 0 values
-    public HashMap<String,String> generateFiltersOfStringType() {
+    public HashMap<String, String> generateFiltersOfStringType() {
         filtersOfStringType = new HashMap<>();
-        if(jsonPayloadClass != null) filtersOfStringType.put("jsonPayloadClass", jsonPayloadClass);
+        if (jsonPayloadClass != null) filtersOfStringType.put("jsonPayloadClass", jsonPayloadClass);
         else if (inletCogId != null) filtersOfStringType.put("inletCogId", inletCogId);
         else if (cogId != null) filtersOfStringType.put("cogId", cogId);
         else if (queueId != null) filtersOfStringType.put("queueId", queueId);
@@ -103,9 +106,9 @@ public class MyOperationConfigYml extends OperationConfigYml{
 
     public HashMap<String, Integer> generateFiltersOfIntegerType() {
         filtersOfIntegerType = new HashMap<>();
-        if(connId != 0) filtersOfIntegerType.put("connId", connId);
-        else if(operation != 0) filtersOfIntegerType.put("operation", operation);
-        else if(deliveryMethod != 0) filtersOfIntegerType.put("deliveryMethod", deliveryMethod);
+        if (connId != 0) filtersOfIntegerType.put("connId", connId);
+        else if (operation != 0) filtersOfIntegerType.put("operation", operation);
+        else if (deliveryMethod != 0) filtersOfIntegerType.put("deliveryMethod", deliveryMethod);
 
         return filtersOfIntegerType;
     }
@@ -125,6 +128,6 @@ public class MyOperationConfigYml extends OperationConfigYml{
 
     @Override
     public String toString() {
-        return "MyOperationConfigYml{" + "searchTerms='" + json_payload_paths.toString() + super.toString();
+        return "MyOperationConfigYml{" + "searchTerms='" + json_payload_paths + super.toString();
     }
 }

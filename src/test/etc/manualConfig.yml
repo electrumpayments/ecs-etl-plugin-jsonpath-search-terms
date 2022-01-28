@@ -88,6 +88,7 @@ configurations:
     rowHandlers:
       - TransformSwitchTranLegHandler
       - AdditionalSearchTermsHandler # added this rowHandlers
+      - AdditionalSearchTermsHandler_QR_tran
       - InsertTranLegRspHandler
       - InsertTranLegReqHandler
     defaultRetention: 36
@@ -114,22 +115,37 @@ configurations:
     className: io.electrum.ecs.netl.handler.RowHandlerConfigYml
     operation: AdditionalSearchTermsOperation
     connectedHandlers:
-      - InsertTranLegRspHandler
+      - AdditionalSearchTermsHandler_QR_tran
 
   - name: AdditionalSearchTermsOperation
     className: io.electrum.ecs.netl.handler.MyOperationConfigYml
     operationClassName: io.electrum.ecs.netl.handler.AdditionalSearchTermsOperation
     json_payload_paths:
-      - $.thirdPartyIdentifiers[0].institutionId
+#      - $.thirdPartyIdentifiers[0].institutionId
       - $.paymentMethod.cardNumber
       - $.client.name
     extended_data_paths:
-#      - $.receiver
+      - $.receiver
       - $.service.serviceRefs[0].ref
       - $.service.messageType
-      - $.inletService.messageType
+#      - $.inletService.messageType
 #    json_http_msg_paths:
-#    deliveryMethod: 2
+    jsonPayloadClass: NULL
+
+  # Special Operation to process QR transactions
+  - name: AdditionalSearchTermsHandler_QR_tran
+    className: io.electrum.ecs.netl.handler.RowHandlerConfigYml
+    operation: AdditionalSearchTermsOperation_QR_tran
+    connectedHandlers:
+      - InsertTranLegRspHandler
+
+  - name: AdditionalSearchTermsOperation_QR_tran
+    className: io.electrum.ecs.netl.handler.MyOperationConfigYml
+    operationClassName: io.electrum.ecs.netl.handler.AdditionalSearchTermsOperation
+    json_payload_paths:
+      - $.qrProperties.qrLabel
+    serviceType: QR
+    jsonPayloadClass: NULL
 
   - name: InsertTranLegRspHandler
     className: io.electrum.ecs.netl.handler.RowHandlerConfigYml
